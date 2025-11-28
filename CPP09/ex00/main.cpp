@@ -10,12 +10,12 @@ int main(int argc, char **argv)
     }
     try
     {
-        BitcoinExchange btc(false);
+        BitcoinExchange btc(true);
         btc.LoadDatabase(argv[1]);
         
     }
-    catch(...)
+    catch(const std::exception &e)
     {
-
+        std::cerr << "Exception : " << e.what() << std::endl;
     }
 }
