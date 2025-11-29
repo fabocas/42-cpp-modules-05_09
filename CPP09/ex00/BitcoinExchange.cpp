@@ -1,9 +1,13 @@
 #include "BitcoinExchange.hpp"
 
-BitcoinExchange::BitcoinExchange(bool Debug) : Debug(Debug) {
-                                               };
+BitcoinExchange::BitcoinExchange(const std::string &filename, bool debug) : _debug(debug)
+{
+    _database = LoadDatabase(filename);
+};
 
-                                               static bool isFutureDate(int y, int m, int d)
+BitcoinExchange::~BitcoinExchange(){};
+
+static bool isFutureDate(int y, int m, int d)
 {
     time_t t = time(NULL);
     tm *now = localtime(&t);
@@ -21,11 +25,7 @@ BitcoinExchange::BitcoinExchange(bool Debug) : Debug(Debug) {
     return false;
 }
 
-static bool isValidRate(const std::string &rate)
-{
-    //TO DO check if rate is a number, check if its valid, check if is missing etc
 
-}
 static bool isValidDate(const std::string &date)
 {
     if (date.length() != 10)
@@ -63,6 +63,27 @@ static bool isValidDate(const std::string &date)
     return true;
 }
 
+void BitcoinExchange::ProcessInput(const std::string &filename)
+{
+    std::ifstream file(filename.c_str());
+    if (!file.is_open())
+        throw std::runtime_error("Couldn't open the file");
+    std::string line;
+    std::getline(file, line)
+    while (getline(file, line))
+    {
+        std::stringstream ss(line);
+        std::string date;
+        std::string rate;
+        size_t pos = line.find('|');
+        if (poss == std::npos)
+        {
+            std::cerr  << "Error | not found" << std::endl;
+            continue;
+        }
+        //date
+    }
+}
 std::map<std::string, float> BitcoinExchange::LoadDatabase(const std::string &filename)
 {
     std::map<std::string, float> prices;
@@ -86,7 +107,7 @@ std::map<std::string, float> BitcoinExchange::LoadDatabase(const std::string &fi
         if (value < 0)
             throw std::runtime_error("Invalid value rate: " + rate);
         prices[date] = value;
-        if (Debug)
+        if (_debug)
         {
             std::cout << date << " => " << prices[date] << std::endl;
         }

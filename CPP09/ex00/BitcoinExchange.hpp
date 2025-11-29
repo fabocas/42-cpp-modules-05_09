@@ -11,13 +11,14 @@
 class BitcoinExchange
 {
     public: 
-        BitcoinExchange(bool Debug);
-        std::map<std::string,float> LoadDatabase(const std::string &filename);
-        
+        BitcoinExchange(const std::string &filename, bool debug);
+        void ProcessInput(const std::string &filename);
+        ~BitcoinExchange();
 
     private:
         std::map<std::string, float> _database;
-        bool Debug;
+        bool _debug;
 
+        std::map<std::string,float> LoadDatabase(const std::string &filename);
 
 };
