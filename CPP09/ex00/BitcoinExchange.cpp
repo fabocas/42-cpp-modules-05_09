@@ -1,9 +1,11 @@
 #include "BitcoinExchange.hpp"
 
-BitcoinExchange::BitcoinExchange(bool Debug) : Debug(Debug) {
-                                               };
+BitcoinExchange::BitcoinExchange(bool Debug) : Debug(Debug)
+{
+};
 
-                                               static bool isFutureDate(int y, int m, int d)
+
+static bool isFutureDate(int y, int m, int d)
 {
     time_t t = time(NULL);
     tm *now = localtime(&t);
@@ -21,10 +23,19 @@ BitcoinExchange::BitcoinExchange(bool Debug) : Debug(Debug) {
     return false;
 }
 
-static bool isValidRate(const std::string &rate)
+static bool isValidRate(const std::string &string, double &value)
 {
-    //TO DO check if rate is a number, check if its valid, check if is missing etc
-
+    try
+    {
+        value = std::stod(string);
+    }
+    catch(...)
+    {
+        return false;
+    }
+    if (value < 0 || value > 1000)
+        return false;
+    return true;
 }
 static bool isValidDate(const std::string &date)
 {
@@ -69,8 +80,7 @@ std::map<std::string, float> BitcoinExchange::LoadDatabase(const std::string &fi
 
     std::ifstream file(filename.c_str());
     if (!file.is_open())
-        throw std::runtime_error("Couldn't open the file");
-
+        throw std::runtime_error("Couldn't open the file => " + filename);
     std::string line;
     std::getline(file, line);
     while (getline(file, line))
@@ -79,12 +89,18 @@ std::map<std::string, float> BitcoinExchange::LoadDatabase(const std::string &fi
         std::string date;
         std::string rate;
         if (!std::getline(ss, date, ',') || !std::getline(ss, rate))
-            throw std::runtime_error("Bad line format");
+        {
+            std::cerr << "Warning: skipping bad line => " << line << std::endl;
+            continue;
+        }
         if (!isValidDate(date))
             throw std::runtime_error("Invalid Date : " + date);
-        float value = std::atof(rate.c_str());
-        if (value < 0)
-            throw std::runtime_error("Invalid value rate: " + rate);
+        double value;
+        if (!isValidRate(rate, value))
+        {
+            std::cout << "Error: invalid value => " << rate << std::endl;
+            continue;
+        }
         prices[date] = value;
         if (Debug)
         {
