@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <stack>
 
 class RPN
 {
@@ -12,7 +13,7 @@ class RPN
         int calculate(const std::string &expressions);
 
     private:
-        std::vector<int> _stack;
+        std::stack<int> _stack;
         void applyOperator(const std::string &op);
 
 };
