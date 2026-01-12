@@ -10,7 +10,7 @@ int main(int argc, char **argv)
     }
     try
     {
-        BitcoinExchange btc("data.csv", true);
+        BitcoinExchange btc("data.csv", false);
         // process input here eg: btc.processInput(argv[1])
         btc.ProcessInput(argv[1]);
         

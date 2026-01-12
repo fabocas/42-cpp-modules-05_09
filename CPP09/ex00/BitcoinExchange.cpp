@@ -114,7 +114,7 @@ void BitcoinExchange::ProcessInput(const std::string &filename)
         size_t pos = line.find('|');
         if (pos == std::string::npos)
         {
-            std::cerr  << "Error | not found" << std::endl;
+            std::cerr  << "Error bad input => " << line << std::endl;
             continue;
         }
         date = line.substr(0, pos);
@@ -132,7 +132,7 @@ void BitcoinExchange::ProcessInput(const std::string &filename)
         rate.erase(rate.find_last_not_of(" \t\r\n") + 1);
         if (!isValidRate(rate, BtcRate))
         {
-            std::cerr << "Error: bad bitcoin rate => " << rate << std::endl;
+            std::cerr << "Error: bad input => " << rate << std::endl;
             continue;
         }
         getRate(date, BtcRate);
@@ -152,19 +152,11 @@ std::map<std::string, float> BitcoinExchange::LoadDatabase(const std::string &fi
         std::stringstream ss(line);
         std::string date;
         std::string rate;
-        if (!std::getline(ss, date, ',') || !std::getline(ss, rate))
-        {
-            std::cerr << "Warning: skipping bad line => " << line << std::endl;
-            continue;
-        }
-        if (!isValidDate(date))
-            throw std::runtime_error("Invalid Date : " + date);
+
+        std::getline(ss, date, ',');
+        std::getline(ss, rate);
         double value;
-        if (!isValidRate(rate, value))
-        {
-            std::cout << "Error: invalid value => " << rate << std::endl;
-            continue;
-        }
+        isValidRate(rate, value);
         prices[date] = value;
         if (_debug)
         {
